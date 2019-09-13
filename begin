@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker-compose run python django-admin startproject one_c_adm .

@@ -1,0 +1,56 @@
+version: '3'
+
+# хранилища
+volumes:
+    pgdata:
+        driver: local
+services:
+    nginx:
+# при падении будет стараться подняться
+        restart: always
+# только свежий nginx
+        image: nginx:latest
+# слушает порт 8080
+        expose:
+          - 8080
+# мапаем порт 80 на его 8080. Тогда сайт будет доступен по адресу localhost. Убедись, что порт у тебя не занят.
+        ports:
+          - "8080:8080"
+# монтируем только те директории, в которых лежит статика, т.к. nginx с динамикой не будет работать. Также директорию с логами и файл настройки, который мы подготовили.
+        volumes:
+            - ./one_c_adm/static:/srv/www/one_c_adm/static
+            - ./one_c_adm/media:/srv/www/one_c_adm/media
+            - ./one_c_adm/logs:/srv/www/one_c_adm/logs
+            - ./docker/nginx:/etc/nginx/conf.d
+# и nginx зависит от контейнера python. Т.е. python должен быть запущен первым
+        depends_on:
+            - python
+    python:
+        restart: always
+# указываем откуда собирать образ
+        build:
+            context: .
+            dockerfile: docker/python/Dockerfile
+# монтируем директорию проекта
+        volumes:
+            - ./one_c_adm:/srv/www/one_c_adm
+        expose:
+          - 8000
+        ports:
+            - 8000:8000
+# запускаем gunicorn
+#        command: "gunicorn -c gunicorn.py one_c_adm.wsgi"
+        command: "gunicorn one_c_adm.wsgi:application -w 2 -b :8000"
+    postgres:
+# Ниже даже расписывать не хочу, насколько все просто: логин, пароль, БД, порты и т.д.
+        image: postgres
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: one_c_adm
+            POSTGRES_PASSWORD: 33lkasdfKK
+            POSTGRES_DB: one_c_adm
+            PGDATA: /var/lib/postgresql/data
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+

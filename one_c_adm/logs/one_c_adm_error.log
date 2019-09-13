@@ -1,0 +1,2 @@
+2019/09/12 11:11:18 [error] 6#6: *1 connect() failed (113: No route to host) while connecting to upstream, client: 192.168.71.33, server: localhost, request: "GET / HTTP/1.1", upstream: "http://172.21.0.2:8000/", host: "1center01.krista.net:8080"
+2019/09/12 11:11:21 [error] 6#6: *1 connect() failed (113: No route to host) while connecting to upstream, client: 192.168.71.33, server: localhost, request: "GET /favicon.ico HTTP/1.1", upstream: "http://172.21.0.2:8000/favicon.ico", host: "1center01.krista.net:8080"
